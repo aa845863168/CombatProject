@@ -126,37 +126,6 @@
 > [Kotlin 协程实战进阶(三、原理篇)](https://juejin.cn/post/7143386748783968292)
 - 协程的底层原理：状态机，挂起与恢复，线程切换原理
 
-创作不易，如果本项目对您有帮助，麻烦点个**Star**，您的**Star**将是我继续创作和写博客的动力！
-项目中有APK文件，可以直接安装看效果。
-
-欢迎在 **Issue** 中提交对本仓库的改进建议~
-
-## 四、注意事项
-
-本项目API均来源于[**WanAndroid**](https://www.wanandroid.com)，禁止商用。
-
-您可以在非商业的前提下免费转载，但同时您必须：
-
-* 保持文章原文，不作修改。
-* 明确署名，即至少注明 `作者：Sumiya` 字样以及文章的原始链接。
-* 微信公众号转载一律不授权 `原创` 标志。
-
-### About me
-
-- #### 微信：`SUM_817`
-- #### Email：`su_mingyan@163.com`
-- #### 掘金：[https://juejin.cn/user/1654096907477549](https://juejin.cn/user/1654096907477549)
-
-如您有任何问题，也可以添加我的微信，拉你进入SumTea_Android技术群，进行技术和学习上的交流。
-
-![wechat](https://github.com/suming77/SumTea_Android/assets/20841967/d51d5c57-e692-45bd-a2b0-430ba558aa96)
-
-感谢您的阅读，`山水有相逢`，我们下篇文章见~
-
-### 致谢
-
-**API：**  鸿洋提供的 [**WanAndroid API**](https://www.wanandroid.com/blog/show/2)
-
 **主要使用的开源框架:**
 
 *   [**Retrofit**](https://github.com/square/retrofit)
