@@ -135,3 +135,9 @@
 *   [**MMKV**](https://github.com/Tencent/MMKV)
 *   [**RxPermission**](https://github.com/tbruyelle/RxPermissions)
 *   [**SmartRefreshLayout**](https://github.com/scwang90/SmartRefreshLayout)
+
+**备忘录**
+* 接入广告SDK
+* 接入微信登录、QQ登录等第三方登录平台
+* 依赖注入框架引入
+* 包名修改
