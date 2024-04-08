@@ -5,6 +5,7 @@ import com.sum.network.response.BaseResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * @author mingyan.su
@@ -18,14 +19,14 @@ open class BaseRepository {
      */
     suspend fun <T> requestResponse(requestCall: suspend () -> BaseResponse<T>?): T? {
         val response = withContext(Dispatchers.IO) {
-            withTimeout(10 * 1000) {
+            withTimeoutOrNull(10 * 1000) {
                 requestCall()
             }
-        } ?: return null
+        }
 
-        if (response.isFailed()) {
+        if (response?.isFailed() == true) {
             throw ApiException(response.errorCode, response.errorMsg)
         }
-        return response.data
+        return response?.data
     }
 }
