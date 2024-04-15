@@ -3,6 +3,7 @@ package com.sum.framework.ext
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,6 +17,7 @@ import kotlinx.coroutines.flow.callbackFlow
  * .onEach { updateUi(it) }      // 获取搜索结果并更新界面
  * .launchIn(mainScope)          // 在主线程收集搜索结果
  */
+@ExperimentalCoroutinesApi
 fun EditText.textChangeFlow(): Flow<String> = callbackFlow {
     val watcher = object : TextWatcher {
         override fun afterTextChanged(s: Editable?) {}

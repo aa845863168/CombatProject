@@ -51,6 +51,10 @@ fun View.onDebounceClick(wait: Long = 200, block: ((View) -> Unit)) {
     setOnClickListener(debounceClick(wait, block))
 }
 
+/**
+ * @param wait 抖动保护时长
+ * 统一处理防抖
+ */
 fun throttleClick(wait: Long = 200, block: ((View) -> Unit)): View.OnClickListener {
 
     return View.OnClickListener { v ->
@@ -63,6 +67,10 @@ fun throttleClick(wait: Long = 200, block: ((View) -> Unit)): View.OnClickListen
     }
 }
 
+/**
+ * @param wait 延迟时长
+ * 点击延长触发
+ */
 fun debounceClick(wait: Long = 200, block: ((View) -> Unit)): View.OnClickListener {
     return View.OnClickListener { v ->
         var action = (v.getTag(R.id.click_debounce_action) as? DebounceAction)
@@ -73,12 +81,19 @@ fun debounceClick(wait: Long = 200, block: ((View) -> Unit)): View.OnClickListen
             action.block = block
         }
         v.removeCallbacks(action)
+        //主线程Handler
         v.postDelayed(action, wait)
     }
 }
 
 class DebounceAction(val view: View,  var block: ((View) -> Unit)): Runnable {
     override fun run() {
+        /**
+         * https://www.cnblogs.com/dasusu/p/8047172.html
+         * 如果 View.post(Runnable) 的 Runnable 操作被缓存下来了，那么这些操作将会在 dispatchAttachedToWindow() 被回调时，
+         * 通过 mAttachInfo.mHandler.post() 发送到主线程的 MessageQueue 中等待执行。isAttachedToWindow状态在
+         * dispatchAttachedToWindow()中返回
+         */
         if(view.isAttachedToWindow){
             block(view)
         }

@@ -15,6 +15,7 @@ class WindowFrameLayout(context: Context, attributeSet: AttributeSet? = null, de
 
     override fun addView(child: View?) {
         super.addView(child)
+        //触发dispatchApplyWindowInsets
         requestApplyInsets()
     }
 

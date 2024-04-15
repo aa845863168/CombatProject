@@ -18,6 +18,10 @@ abstract class BaseDataBindActivity<DB : ViewBinding> : BaseActivity() {
     override fun setContentLayout() {
 //      mBinding = DataBindingUtil.setContentView(this, getLayoutResId())
         val type = javaClass.genericSuperclass
+        /**
+         * 通过泛型实化获取dataBinding类
+         * TODO：后续需要通过bindAdapter改造，分离视图和视图逻辑，简化视图层
+         */
         val vbClass: Class<DB> = type!!.saveAs<ParameterizedType>().actualTypeArguments[0].saveAs()
         val method = vbClass.getDeclaredMethod("inflate", LayoutInflater::class.java)
         mBinding = method.invoke(this, layoutInflater)!!.saveAsUnChecked()

@@ -16,6 +16,7 @@ import androidx.viewbinding.ViewBinding
  * @date   2023/3/9 08:13
  * @desc   adapter基类
  * 提供创建ViewHolder能力，提供添加头尾布局能力，dataBinding能力
+ * TODO: RecyclerView.Adapter可用ListAdapter替代，提高性能
  */
 abstract class BaseRecyclerViewAdapter<T, B : ViewBinding> : RecyclerView.Adapter<BaseViewHolder>() {
     /**
@@ -45,7 +46,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewBinding> : RecyclerView.Adapte
      * 子类不可重载，如果有需要请重写[onCreateDefViewHolder]实现自定义ViewHolder
      * 或者重写[getViewBinding]传入布局，不需要创建ViewHolder
      */
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
+    final override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder {
         val baseViewHolder: BaseViewHolder
         when (viewType) {
             HEADER_VIEW -> {
@@ -108,7 +109,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewBinding> : RecyclerView.Adapte
                 it.invoke(holder.itemView, position)
             }
         }
-        onItemLongClickListener?.let {
+        onItemLongClickListener.let {
             holder.itemView.setOnLongClickListener { v ->
                 var position = holder.adapterPosition
                 if (position == RecyclerView.NO_POSITION) {
@@ -129,7 +130,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewBinding> : RecyclerView.Adapte
     /**
      * 子类不可重载该方法，如有需要请重写[getDefItemViewType]
      */
-    override fun getItemViewType(position: Int): Int {
+    final override fun getItemViewType(position: Int): Int {
         return if (hasHeaderView() && position == headerViewPosition) {
             HEADER_VIEW
         } else if (hasFooterView() && position == footerViewPosition) {
@@ -154,7 +155,7 @@ abstract class BaseRecyclerViewAdapter<T, B : ViewBinding> : RecyclerView.Adapte
     /**
      * 不要重写此方法，如果有需要请重写[getDefItemCount]
      */
-    override fun getItemCount(): Int {
+    final override fun getItemCount(): Int {
         return headerLayoutCount + getDefItemCount() + footerLayoutCount
     }
 
