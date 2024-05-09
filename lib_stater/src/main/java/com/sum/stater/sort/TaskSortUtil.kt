@@ -12,33 +12,41 @@ object TaskSortUtil {
     private val sNewTasksHigh: MutableList<Task> = ArrayList()
 
     /**
-     * 任务的有向无环图的拓扑排序
+     * 根据任务的依赖关系对其进行排序。
      *
-     * @return
+     * @param originTasks 原始任务列表，包含了所有需要进行排序的任务。
+     * @param clsLaunchTasks 类任务列表，用于根据任务类找到对应的任务实例。
+     * @return 返回一个按照依赖关系排序后的任务列表。
      */
     @Synchronized
     fun getSortResult(
         originTasks: List<Task>,
         clsLaunchTasks: List<Class<out Task>>
     ): List<Task> {
-        val makeTime = System.currentTimeMillis()
-        val dependSet: MutableSet<Int> = ArraySet()
-        val graph = DirectionGraph(originTasks.size)
+        val makeTime = System.currentTimeMillis() // 记录开始分析任务依赖关系的时间
+        val dependSet: MutableSet<Int> = ArraySet() // 用于存储任务依赖关系的集合
+        val graph = DirectionGraph(originTasks.size) // 创建有向图，用于表示任务之间的依赖关系
 
+        // 遍历所有任务，构建依赖关系图
         for (i in originTasks.indices) {
             val task = originTasks[i]
+            // 如果任务不需要发送或者没有依赖任务，则跳过
             if (task.isSend || task.dependsOn().isNullOrEmpty()) {
                 continue
             }
 
+            // 处理任务依赖关系
             task.dependsOn()?.let { list ->
                 for (clazz in list) {
                     clazz?.let { cls ->
+                        // 查找依赖任务在原始任务列表中的索引
                         val indexOfDepend = getIndexOfTask(originTasks, clsLaunchTasks, cls)
+                        // 如果找不到依赖任务，则抛出异常
                         check(indexOfDepend >= 0) {
                             task.javaClass.simpleName +
                                     " depends on " + cls?.simpleName + " can not be found in task list "
                         }
+                        // 添加依赖关系到集合中，并在图中添加相应的边
                         dependSet.add(indexOfDepend)
                         graph.addEdge(indexOfDepend, i)
                     }
@@ -46,12 +54,17 @@ object TaskSortUtil {
             }
         }
 
+        // 进行拓扑排序，得到排序后的任务索引列表
         val indexList: List<Int> = graph.topologicalSort()
+        // 根据排序结果，获取排序后的任务列表
         val newTasksAll = getResultTasks(originTasks, dependSet, indexList)
+        // 记录任务分析所花费的时间
         DispatcherLog.i("task analyse cost makeTime " + (System.currentTimeMillis() - makeTime))
+        // 打印所有任务的名称
         printAllTaskName(newTasksAll, false)
-        return newTasksAll
+        return newTasksAll // 返回排序后的任务列表
     }
+
 
     /**
      * 获取最终任务列表

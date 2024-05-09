@@ -84,7 +84,7 @@ class TaskDispatcher private constructor() {
             throw RuntimeException("must be called from UiThread")
         }
 
-        if (!mAllTasks.isNullOrEmpty()) {
+        if (mAllTasks.isNotEmpty()) {
             mAnalyseCount.getAndIncrement()
             printDependedMsg(false)
             mAllTasks = TaskSortUtil.getSortResult(mAllTasks, mClsAllTasks).toMutableList()
@@ -206,7 +206,8 @@ class TaskDispatcher private constructor() {
                 }
             }
             if (mNeedWaitCount.get() > 0) {
-                mCountDownLatch?.await(WAIT_TIME.toLong(), TimeUnit.MILLISECONDS)
+                //主线程阻塞，指TaskDispatcher
+                mCountDownLatch?.await(WAIT_TIME, TimeUnit.MILLISECONDS)
             }
         } catch (e: InterruptedException) {
             e.printStackTrace()
@@ -214,7 +215,7 @@ class TaskDispatcher private constructor() {
     }
 
     companion object {
-        private const val WAIT_TIME = 10000
+        private const val WAIT_TIME = 10 * 1000L
         var context: Application? = null
             private set
         var isMainProcess = false

@@ -36,7 +36,7 @@ class InitSumHelperTask(val application: Application) : Task() {
 /**
  * 初始化MMKV
  */
-class InitMmkvTask() : Task() {
+class InitMmkvTask : Task() {
 
     //异步线程执行的Task在被调用await的时候等待
     override fun needWait(): Boolean {

@@ -40,6 +40,7 @@ abstract class Task : ITask {
 
     /**
      * 当前Task等待，让依赖的Task先执行
+     * 由satisfy控制，直至减至0，返回
      */
     fun waitToSatisfy() {
         try {
@@ -51,6 +52,7 @@ abstract class Task : ITask {
 
     /**
      * 依赖的Task执行完一个
+     * releasing all waiting threads if the count reaches zero.
      */
     fun satisfy() {
         mDepends.countDown()

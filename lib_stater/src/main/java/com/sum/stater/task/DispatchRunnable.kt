@@ -29,6 +29,7 @@ class DispatchRunnable : Runnable {
         Process.setThreadPriority(mTask.priority())
         var startTime = System.currentTimeMillis()
         mTask.isWaiting = true
+        //阻塞当前线程，指一个Task
         mTask.waitToSatisfy()
         val waitTime = System.currentTimeMillis() - startTime
         startTime = System.currentTimeMillis()
