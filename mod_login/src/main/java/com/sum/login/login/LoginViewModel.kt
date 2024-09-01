@@ -15,7 +15,7 @@ import com.sum.network.viewmodel.BaseViewModel
 class LoginViewModel : BaseViewModel() {
     val loginLiveData = MutableLiveData<User?>()
     val registerLiveData = MutableLiveData<User?>()
-    val loginRepository by lazy { LoginRepository() }
+    val loginRepository by lazy { LoginRepository() } //懒加载延迟初始化，即在第一次访问该属性时才进行初始化，而不是在对象创建时就初始化。
 
     /**
      * 登录

@@ -1,5 +1,6 @@
 package com.sum.common.provider
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import com.alibaba.android.arouter.facade.annotation.Autowired
 import com.alibaba.android.arouter.launcher.ARouter
@@ -48,6 +49,7 @@ object UserServiceProvider {
 
     /**
      * 清除用户信息
+     *
      */
     fun clearUserInfo() {
         userService.clearUserInfo()
@@ -66,14 +68,17 @@ object UserServiceProvider {
      */
     fun saveUserPhone(phone: String?) {
         userService.saveUserPhone(phone)
+        Log.d("UserServiceProvider","phone=$phone")
     }
 
     /**
-     * 保存用户手机号码
+     * 获取用户手机号码
      * @return phone
      */
     fun getUserPhone(): String? {
+        Log.d("UserServiceProvider1","getphone=${userService.getUserPhone().toString()}")
         return userService.getUserPhone()
+       // Log.d("UserServiceProvider1","getphone=$userService.getUserPhone().toString()")
     }
 
 }

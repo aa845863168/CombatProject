@@ -42,10 +42,11 @@ class SearchHistoryView @JvmOverloads constructor(
         for (index in 0 until histories.size) {
             var chipItem: Chip
             //这里也要需要判断一下复用的情况
-            val childCount = mBinding.chipGroup.childCount
+            val childCount = mBinding.chipGroup.childCount //获取 chipGroup 中的子视图数量
+            //当新的历史记录的数量<原数量时，则复用已有的 Chip;
             if (index < childCount) {
                 chipItem = mBinding.chipGroup.getChildAt(index) as Chip
-            } else {
+            } else {//否则，创建一个新的 Chip 并添加到 chipGroup 中。
                 chipItem = createChipItem()
                 mBinding.chipGroup.addView(chipItem)
             }

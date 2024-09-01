@@ -12,9 +12,9 @@ import com.sum.user.databinding.DialogLogoutBinding
 /**
  * @Author mingyan.su
  * @Date   2023/4/14 11:20
- * @Desc   申请售后过期提示dialog
+ * @Desc   申请售后过期提示dialog，登出功能
  */
-class LogoutTipsDialog {
+class  LogoutTipsDialog{
     class Builder(
         activity: FragmentActivity,
         private var mButtonClickListener: (() -> Unit)? = null

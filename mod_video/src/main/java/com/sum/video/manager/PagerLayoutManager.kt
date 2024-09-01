@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.sum.framework.log.LogUtil
 import com.sum.video.listener.OnViewPagerListener
+import java.text.FieldPosition
 
 /**
  * 单页滑动LinearLayoutManager
@@ -19,19 +20,21 @@ class PagerLayoutManager : LinearLayoutManager {
 
     companion object {
         private const val TAG = "PagerLayoutManager"
+        var selectPosition: Int = -1
     }
 
-    constructor(context: Context?, orientation: Int) : super(context, orientation, false) {
+    constructor(context: Context?, orientation: Int) : super(context, orientation,false,) {
         init()
     }
 
-    constructor(context: Context?, orientation: Int, reverseLayout: Boolean) : super(
-        context,
-        orientation,
-        reverseLayout
-    ) {
-        init()
-    }
+//    constructor(context: Context?, orientation: Int, reverseLayout: Boolean,position: Int) : super(
+//        context,
+//        orientation,
+//        reverseLayout,
+//
+//    ) {
+//        init()
+//    }
 
     private fun init() {
         mPagerSnapHelper = PagerSnapHelper()
@@ -47,7 +50,14 @@ class PagerLayoutManager : LinearLayoutManager {
     override fun onLayoutChildren(recycler: RecyclerView.Recycler, state: RecyclerView.State) {
         super.onLayoutChildren(recycler, state)
     }
-
+    constructor(context: Context?, orientation: Int, reverseLayout: Boolean,position: Int) : super(
+        context,
+        orientation,
+        reverseLayout,
+        ) {
+        selectPosition = position
+        init()
+    }
     /**
      * 滑动状态的改变
      * 缓慢拖拽-> SCROLL_STATE_DRAGGING
@@ -64,6 +74,7 @@ class PagerLayoutManager : LinearLayoutManager {
                 if (viewIdle != null) {
                     val positionIdle = getPosition(viewIdle)
                     if (childCount == 1) {
+                        //if条件里已经确保了界面只有一个子视图，当视图总数-1=positionIdle时，就再次确定获取的视图viewIdle是当前界面唯一也是最后一个子视图（positionIdle == itemCount - 1）
                         mOnViewPagerListener?.onPageSelected(positionIdle, positionIdle == itemCount - 1, viewIdle)
                     }
                 }
@@ -127,6 +138,7 @@ class PagerLayoutManager : LinearLayoutManager {
              */
             override fun onChildViewAttachedToWindow(view: View) {
                 if (childCount == 1) {
+                    LogUtil.i("onPageRelease====onInitComplete====true", tag = TAG)
                     mOnViewPagerListener?.onInitComplete(view)
                 }
             }

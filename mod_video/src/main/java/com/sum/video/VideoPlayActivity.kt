@@ -29,6 +29,7 @@ import com.google.android.exoplayer2.upstream.cache.CacheDataSink
 import com.google.android.exoplayer2.upstream.cache.CacheDataSource
 import com.google.android.exoplayer2.upstream.cache.LeastRecentlyUsedCacheEvictor
 import com.google.android.exoplayer2.upstream.cache.SimpleCache
+import com.sum.common.constant.KEY_SELECTED_VIDEO_ID
 import com.sum.common.constant.KEY_VIDEO_PLAY_LIST
 import com.sum.common.constant.VIDEO_ACTIVITY_PLAYER
 import com.sum.framework.base.BaseDataBindActivity
@@ -60,6 +61,9 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
     //播放位置
     private var mPlayingPosition = 0
 
+    //第一次播放flag
+    private var onPageSelected_flag = -1
+
     //当前播放URL
     private var mPlayUrl: String? = null
 
@@ -88,6 +92,10 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
     @JvmField
     var mData: ArrayList<VideoInfo>? = null
 
+    @Autowired(name = KEY_SELECTED_VIDEO_ID)
+    @JvmField
+    var selectedVideoId: Int = -1
+
     override fun initView(savedInstanceState: Bundle?) {
         ARouter.getInstance().inject(this)
         StatusBarSettingHelper.setStatusBarTranslucent(this)
@@ -95,23 +103,25 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
         initPlayerView()
         initRecyclerView()
         mBinding.ivBack.onClick { finish() }
+        //网络不好的时候才触发tvRetry刷新
         mBinding.tvRetry.onClick {
             //重试
             mExoPlayer?.prepare()
         }
         ViewUtils.setClipViewCornerRadius(mBinding.tvRetry, dpToPx(4))
     }
-
+        //总视频框架容器
     private fun initRecyclerView() {
-        mAdapter = VideoAdapter()
-        val manager = PagerLayoutManager(this@VideoPlayActivity, LinearLayoutManager.VERTICAL, false)
+        mAdapter = VideoAdapter(selectedVideoId,-1)
+        val manager = PagerLayoutManager(this@VideoPlayActivity, LinearLayoutManager.VERTICAL, false,selectedVideoId)
         manager.setOnViewPagerListener(onScrollPagerListener)
         mBinding.recyclerView.apply {
             layoutManager = manager
             adapter = mAdapter
         }
-
+//最原始的数据源
         mAdapter.setData(mData)
+//            mAdapter.
         mAdapter.onItemClickListener = { view: View, position: Int ->
             if (mExoPlayer?.isPlaying == true) {
                 mExoPlayer?.playWhenReady = false
@@ -145,6 +155,8 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
      * 创建exoplayer播放器实例
      * 视屏画面渲染工厂类，语音选择器，缓存控制器
      */
+
+    //单独的视频容器
     private fun initPlayerView(): Boolean {
         //创建exoplayer播放器实例
         mPlayView = initStylePlayView()
@@ -241,10 +253,14 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
      * 滑动监听
      */
     private val onScrollPagerListener = object : OnViewPagerListener {
-        override fun onInitComplete(view: View?) {
-            startPlay(0, view)
-        }
 
+        override fun onInitComplete(view: View?) {
+            if (selectedVideoId != -1) {
+
+                startPlay(selectedVideoId, view)
+            }
+//            startPlay(0, view)
+        }
         override fun onPageRelease(isNext: Boolean, position: Int, view: View?) {
             LogUtil.i("onPageRelease===$isNext | $position", tag = TAG)
             //还应该暂停掉列表上正在播放的那个
@@ -258,6 +274,17 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
             LogUtil.i("onPageSelected===$position | $isBottom | ${mAdapter.itemCount}", tag = TAG)
             if (position < 0 || position >= mAdapter.itemCount) return
             if (position == mPlayingPosition) return
+//            when(onPageSelected_flag){
+//                -1-> {
+//                    if(selectedVideoId > 0){
+//                        mPlayingPosition = selectedVideoId
+//                        startPlay(selectedVideoId, view)
+//                        onPageSelected_flag = 1
+//                        return
+//                    }
+//                }
+//            }
+            //确保只有在位置有效且与之前选中的位置不同的情况下，才会更新播放位置
             mPlayingPosition = position
             startPlay(position, view)
         }
@@ -270,6 +297,8 @@ class VideoPlayActivity : BaseDataBindActivity<ActivityVideoPlayBinding>() {
      */
     private fun startPlay(position: Int, view: View?) {
         //播放器视图
+        LogUtil.i("startPlay===$position | | ${mAdapter.itemCount}", tag = TAG)
+
         if (view == null) return
         val item = mAdapter.getItem(position)
         if (item == null || item.playUrl?.isEmpty() == true) return

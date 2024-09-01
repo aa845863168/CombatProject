@@ -24,8 +24,7 @@ import com.sum.main.databinding.ActivityArticleBinding
  * @desc   文章tab
  */
 class ArticleTabActivity : BaseDataBindActivity<ActivityArticleBinding>() {
-    private val mArrayTabFragments = SparseArray<Fragment>()
-
+    private val mArrayTabFragments = SparseArray<Fragment>() //用于存储不连续索引的 Fragment 对象
     private var mTabLayoutMediator: TabLayoutMediator? = null
     private var mFragmentAdapter: ViewPage2FragmentAdapter? = null
     private var systemSecondList: MutableList<SystemSecondList>? = null

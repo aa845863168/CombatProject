@@ -22,7 +22,7 @@ import com.sum.tea.task.InitSumHelperTask
  * @date   2023/2/9 23:19
  * @desc   应用类
  */
-class SumApplication : Application() {
+class  SumApplication : Application() {
 
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)

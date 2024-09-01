@@ -93,8 +93,24 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
         }
     }
 
+/**
+ *  ARouter 进行页面跳转
+ *    //1. ARouter.getInstance()：
+ * //                这是获取 ARouter 的单例实例。ARouter 是一个用于 Android 应用组件化开发的路由框架。
+ * //  2. build(USER_ACTIVITY_COLLECTION)：
+ * //                build 方法用于创建一个 Postcard 对象，Postcard 是 ARouter 用来封装路由信息的类。
+ * //                USER_ACTIVITY_COLLECTION 是目标页面的路径，通常是一个字符串常量，定义了要跳转的目标页面。例如：
+ * //                const val USER_ACTIVITY_COLLECTION = "/user/activity/collection"
+ * //3. navigation()：
+ * //                navigation 方法用于执行跳转操作。调用这个方法后，ARouter 会根据 Postcard 中的信息找到对应的目标页面并进行跳转。
+ *
+ * **/
+/**
+ * 给“我的”界面的，”为你推荐“上方的所有图标设置点击事件
+ * **/
     private fun initListener() {
         mHeadBinding.apply {
+            //如果用户已登录，则导航到用户信息页面；如果未登录，则跳转到登录页面。
             ivHead.onClick {
                 if (UserServiceProvider.isLogin()) {
                     ARouter.getInstance().build(USER_ACTIVITY_INFO).navigation()
@@ -102,6 +118,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
                     LoginServiceProvider.login(requireContext())
                 }
             }
+            //跳转设置界面
             ivSetting.onClick {
                 ARouter.getInstance().build(USER_ACTIVITY_SETTING).navigation()
             }
@@ -111,6 +128,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             tvWorkTitle.onClick {
 
             }
+            //点击“我喜欢的”时，如果用户已登录，则导航到收藏页面；如果未登录，则跳转到登录页面。
             tvLikeTitle.onClick {
                 if (UserServiceProvider.isLogin()) {
                     ARouter.getInstance().build(USER_ACTIVITY_COLLECTION).navigation()
@@ -140,8 +158,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
 
             }
             tvHilt.onClick {
-
-            }
+              }
         }
 
     }
@@ -155,6 +172,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             setOnLoadMoreListener(this@MineFragment)
             autoRefresh()
         }
+        //复用文章item的适配器
         mAdapter = ArticleAdapter()
         val dp12 = dpToPx(12)
         mBinding?.recyclerView?.apply {
@@ -166,6 +184,8 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             })
             adapter = mAdapter
         }
+
+        //点击列表项，打开文章详情页面。
         mAdapter.onItemClickListener = { _: View, position: Int ->
             val item = mAdapter.getItem(position)
             if (item != null && !item.link.isNullOrEmpty()) {
@@ -176,6 +196,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
                 )
             }
         }
+        //处理收藏操作，如果用户未登录，则跳转到登录页面。
         mAdapter.onItemCollectListener = { _: View, position: Int ->
             if (LoginServiceProvider.isLogin()) {
                 setCollectView(position)

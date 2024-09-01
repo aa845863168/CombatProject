@@ -18,9 +18,15 @@ class LoginRepository : BaseRepository() {
      */
     suspend fun login(username: String, password: String): User? {
         return requestResponse {
-            ApiManager.api.login(username, password)
+            ApiManager.api.login(username, password)//与服务器进行通信，验证用户名和密码
+            //匹配，服务器返回一个 User 对象。loginLiveData 被赋值为该对象，触发 observe 方法
+            //如果不匹配，服务器返回 null
         }
     }
+
+    /**
+     * requestResponse挂起函数
+     * **/
 
     /**
      * 注册

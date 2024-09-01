@@ -11,8 +11,6 @@ import com.sum.framework.ext.dividerGridSpace
 import com.sum.framework.ext.gone
 import com.sum.framework.ext.toBeanOrNull
 import com.sum.framework.ext.visible
-import com.sum.framework.toast.TipsToast
-import com.sum.main.R
 import com.sum.main.databinding.FragmentCategorySecondBinding
 import com.sum.main.ui.category.adapter.CategorySecondItemAdapter
 import com.sum.main.ui.category.viewmodel.CategoryViewModel

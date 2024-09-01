@@ -62,7 +62,7 @@ class UserService : IUserService {
     }
 
     /**
-     * 保存用户手机号码
+     * 获取用户手机号码
      * @return phone
      */
     override fun getUserPhone(): String? {

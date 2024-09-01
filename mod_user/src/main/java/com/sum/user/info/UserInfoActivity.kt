@@ -48,6 +48,7 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
     private var mUploadImageUri: Uri? = null
 
     //裁剪图片文件
+
     private var mUploadImageFile: File? = null
 
     //保存的头像路径
@@ -62,6 +63,7 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
     //相册回调
     var mActivityResultLauncherAlbum: ActivityResultLauncher<Intent>? = null
 
+    //TODO:不需要实例化，相当于JAVA静态类
     companion object {
         fun start(context: Context) {
             val intent = Intent(context, UserInfoActivity::class.java)
@@ -108,6 +110,7 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
     /**
      * 设置用户信息
      */
+    //未设置数据时就填充默认数据
     private fun initUserInfo() {
         val user = UserServiceProvider.getUserInfo() ?: return
         //通过DataBinding绑定数据
@@ -115,9 +118,10 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
         mBinding.activity = this
         mBinding.ivHead.loadFile(File(user.icon ?: ""))
     }
-
+    //点击后触发监听者，进行数据设置
     private fun initListener() {
         mBinding.clHead.onClick {
+            //进行数据设置
             showChoosePhotoDialog()
         }
         mBinding.clBirthday.onClick {
@@ -157,6 +161,8 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
      * 设置生日日期
      */
     private fun showBirthdayDialog() {
+        //回调setBirthDayDateCall获取用户选中的处理好格式的date
+        //不理解date是怎么得到的timeStamp的日期值
         SelectBirthdayDialog.Builder(this).setBirthDayDateCall { date ->
             mBinding.tvBirthday.text = date
         }.show()
@@ -172,6 +178,9 @@ class UserInfoActivity : BaseDataBindActivity<ActivityUserInfoBinding>() {
             Manifest.permission.CAMERA
         ).subscribe { granted ->
             if (granted) {
+                //TODO: 需要学习建造者模式，取消在哪里
+                //建造组装好的成品， ChoosePhotoDialog里是具体的构造步骤
+                //showChoosePhotoDialog()被外界调用，负责把外界需要的openAlbum()和takePictures()“构造原料”放入 ChoosePhotoDialog
                 ChoosePhotoDialog.Builder(this)
                         .setPhotoAlbumCall {
                             openAlbum()

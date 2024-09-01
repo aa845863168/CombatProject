@@ -47,6 +47,7 @@ class ArticleAdapter : BaseRecyclerViewAdapter<ArticleInfo, LayoutArticleItemBin
             tvTitle.text = item.title
             tvTitle.Bold()
             tvDesc.text = item.desc
+            //是否隐藏
             if (item.desc.isNullOrEmpty()) {
                 tvDesc.gone()
             } else {
@@ -57,9 +58,9 @@ class ArticleAdapter : BaseRecyclerViewAdapter<ArticleInfo, LayoutArticleItemBin
             tvAuthorName.text = authorName
             tvZan.text = "${item.zan ?: "0"}"
             ivCollect.onClick {
-                onItemCollectListener?.invoke(it, position)
+                onItemCollectListener?.invoke(it, position) //点击item后把id传递给activity,进行是否登录的判断
             }
-            ivCollect.isSelected = item.collect ?: false
+            ivCollect.isSelected = item.collect ?: false//如果已登录，activity就跳转到collectArticle，给collect赋值
         }
     }
 

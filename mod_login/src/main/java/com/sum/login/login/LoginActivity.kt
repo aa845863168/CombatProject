@@ -9,6 +9,7 @@ import android.text.method.HideReturnsTransformationMethod
 import android.text.method.LinkMovementMethod
 import android.text.method.PasswordTransformationMethod
 import android.text.style.ClickableSpan
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.TextView
@@ -43,10 +44,12 @@ import kotlinx.coroutines.flow.onEach
 class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
     private var isShowPassword = true
 
+
     override fun initView(savedInstanceState: Bundle?) {
         initAgreement()
         initListener()
-        mBinding.etPhone.setText(UserServiceProvider.getUserPhone())
+        mBinding.etPhone.setText(UserServiceProvider.getUserPhone()) //通过isLogin保存登录状态，实现自动登录
+        Log.d(TAG, UserServiceProvider.getUserPhone().toString())
         mBinding.etPhone.setSelection(mBinding.etPhone.length())
         mBinding.etPassword.transformationMethod = HideReturnsTransformationMethod.getInstance()
     }
@@ -56,23 +59,24 @@ class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
             //登录成功
             dismissLoading()
             user?.let {
+                //当loginLiveData有值时，保存用户信息和电话号码，并显示登录成功提示
                 UserServiceProvider.saveUserInfo(user)
                 UserServiceProvider.saveUserPhone(user.username)
                 TipsToast.showTips(R.string.success_login)
 //                MainServiceProvider.toMain(context = this)
                 finish()
             } ?: kotlin.run {
-
+                //当loginLiveData=null时，登录失败执行
             }
         }
     }
 
     private fun initListener() {
         mBinding.ivPasswordToggle.onClick {
-            setPasswordHide()
+            setPasswordHide() //密码是否隐藏
         }
         mBinding.tvForgetPassword.onClick {
-            TipsToast.showTips(R.string.login_forget_password)
+            TipsToast.showTips(R.string.login_forget_password) //后面可以加一个找回密码的功能
         }
         mBinding.tvLogin.onClick {
             toLogin()
@@ -80,7 +84,7 @@ class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
         mBinding.tvRegister.onClick {
             RegisterActivity.start(this)
         }
-
+        //在电话号码输入框、密码输入框、用户协议选中框，每次变化时更新登录按钮的状态
         setEditTextChange(mBinding.etPhone)
         setEditTextChange(mBinding.etPassword)
         mBinding.cbAgreement.setOnCheckedChangeListener { _, _ ->
@@ -97,7 +101,7 @@ class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
         val password = mBinding.etPassword.text.toString()
         val passwordEnable = !password.isNullOrEmpty()
         val agreementEnable = mBinding.cbAgreement.isChecked
-
+        //各个条件都为ture时,按钮设为选中状态
         mBinding.tvLogin.isSelected = phoneEnable && passwordEnable && agreementEnable
     }
 
@@ -105,15 +109,17 @@ class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
      * 监听EditText文本变化
      */
     private fun setEditTextChange(editText: EditText) {
-        editText.textChangeFlow()
+        editText.textChangeFlow()//setEditTextChange 方法使用 Flow 监听 EditText 的文本变化。
 //                .filter { it.isNotEmpty() }
-                .debounce(300)
+                .debounce(300) //debounce(300) 用于防抖动，确保在 300 毫秒内只处理最后一次变化。
                 //.flatMapLatest { searchFlow(it.toString()) }
-                .flowOn(Dispatchers.IO)
-                .onEach {
+
+                .flowOn(Dispatchers.IO)//flowOn(Dispatchers.IO) 指定在 IO 线程上执行。
+
+                .onEach {// onEach 操作符在每次文本变化时调用 updateLoginState 方法。
                     updateLoginState()
                 }
-                .launchIn(lifecycleScope)
+                .launchIn(lifecycleScope)//launchIn(lifecycleScope) 启动 Flow 并在生命周期范围内运行。
     }
 
     /**
@@ -156,16 +162,18 @@ class LoginActivity : BaseMvvmActivity<ActivityLoginBinding, LoginViewModel>() {
 
     /**
      * 初始化协议点击
+     *
+     * 涉及到字符串资源获取、异常处理、文本链接处理、SpannableStringBuilder 和 ClickableSpan 的使用
      */
     private fun initAgreement() {
         val agreement = getStringFromResource(R.string.login_agreement)
         try {
             mBinding.cbAgreement.movementMethod = LinkMovementMethod.getInstance()
-            val spaBuilder = SpannableStringBuilder(agreement)
+            val spaBuilder = SpannableStringBuilder(agreement) //使用 SpannableStringBuilder 来构建可点击的文本。
             val privacySpan = getStringFromResource(R.string.login_privacy_agreement)
             val serviceSpan = getStringFromResource(R.string.login_user_agreement)
             spaBuilder.setSpan(
-                object : ClickableSpan() {
+                object : ClickableSpan() {//使用 ClickableSpan 来定义可点击的文本区域，并设置点击事件和文本样式。
                     override fun onClick(widget: View) {
                         (widget as TextView).highlightColor = getColorFromResource(com.sum.common.R.color.transparent)
                         PrivacyPolicyActivity.start(this@LoginActivity)

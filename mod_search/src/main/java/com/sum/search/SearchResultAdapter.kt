@@ -19,12 +19,13 @@ import com.sum.search.databinding.LayoutSearchResultItemBinding
 /**
  * @author mingyan.su
  * @date   2023/3/21 22:50
- * @desc   文章列表Item
+ * @desc   （搜索结果的）文章列表Item
+ *
  */
 class SearchResultAdapter : BaseRecyclerViewAdapter<ArticleInfo, LayoutSearchResultItemBinding>() {
-    var onItemCollectListener: ((view: View, position: Int) -> Unit?)? = null
+    var onItemCollectListener: ((view: View, position: Int) -> Unit?)? = null//用于监听每个 item 的收藏操作
     private val format = SimpleDateFormat("yyyy-MM-dd:HH:mm", Locale.CHINA)
-
+//绑定item视图
     override fun getViewBinding(
         layoutInflater: LayoutInflater,
         parent: ViewGroup,
@@ -32,7 +33,7 @@ class SearchResultAdapter : BaseRecyclerViewAdapter<ArticleInfo, LayoutSearchRes
     ): LayoutSearchResultItemBinding {
         return LayoutSearchResultItemBinding.inflate(layoutInflater, parent, false)
     }
-
+//给每个item进行数据初始化
     override fun onBindDefViewHolder(
         holder: BaseBindViewHolder<LayoutSearchResultItemBinding>,
         item: ArticleInfo?,
@@ -53,9 +54,9 @@ class SearchResultAdapter : BaseRecyclerViewAdapter<ArticleInfo, LayoutSearchRes
             tvFrom.text = "${item.superChapterName}/${item.chapterName}"
             tvAuthorName.text = authorName
             ivCollect.onClick {
-                onItemCollectListener?.invoke(it, position)
+                onItemCollectListener?.invoke(it, position) //点击收藏，传递出收藏文章的item的id到activity进行是否登录的判断
             }
-            ivCollect.isSelected = item.collect ?: false
+            ivCollect.isSelected = item.collect ?: false //判空完成后，collect在collectArticle被赋值
         }
     }
 

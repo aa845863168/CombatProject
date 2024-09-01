@@ -13,7 +13,6 @@ import com.sum.framework.base.BaseMvvmFragment
 import com.sum.framework.ext.gone
 import com.sum.framework.ext.visible
 import com.sum.framework.utils.dpToPx
-import com.sum.main.R
 import com.sum.main.databinding.FragmentHomeVideoBinding
 import com.sum.main.ui.home.adapter.HomeTabItemAdapter
 import com.sum.main.ui.home.viewmodel.HomeViewModel

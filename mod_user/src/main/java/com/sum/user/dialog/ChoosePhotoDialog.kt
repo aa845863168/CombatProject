@@ -50,7 +50,7 @@ class ChoosePhotoDialog {
             mOnTakePicturesCall = onTakePicturesCall
             return this
         }
-
+        //回调
         fun setPhotoAlbumCall(onPhotoAlbumCall: (() -> Unit)): Builder {
             mOnPhotoAlbumCall = onPhotoAlbumCall
             return this

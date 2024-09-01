@@ -12,17 +12,17 @@ import com.tencent.mmkv.MMKV
  */
 object SearchManager {
 
-    private var mmkv = MMKV.defaultMMKV()
+    private var mmkv = MMKV.defaultMMKV() //有什么用
 
     /**
      * 保存搜索历史
      * @param searchList
      */
     fun saveSearchHistory(searchList: MutableList<String>) {
-        val histories = getSearchHistory() ?: mutableListOf()
+        val histories = getSearchHistory() ?: mutableListOf() //如果get返回的为空，就创建一个新的空列表
         histories.addAll(searchList)
-        val duplicateRemoval = histories.distinct()
-        mmkv.encode(SEARCH_HISTORY_INFO, duplicateRemoval.toJson(true))
+        val duplicateRemoval = histories.distinct()//使用 distinct() 方法去除重复的搜索项
+        mmkv.encode(SEARCH_HISTORY_INFO, duplicateRemoval.toJson(true))//将去重后列表以 JSON 格式编码，并保存名为 SEARCH_HISTORY_INFO 的存储
     }
 
     /**
@@ -32,7 +32,7 @@ object SearchManager {
     fun addSearchHistory(keyWord: String) {
         val histories = getSearchHistory() ?: mutableListOf()
         histories.add(keyWord)
-        val duplicateRemoval = histories.distinct()
+        val duplicateRemoval = histories.distinct()//使用 distinct() 方法去除重复的搜索项
         mmkv.encode(SEARCH_HISTORY_INFO, duplicateRemoval.toJson())
     }
 

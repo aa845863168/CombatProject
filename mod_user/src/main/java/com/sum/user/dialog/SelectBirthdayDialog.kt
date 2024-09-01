@@ -23,7 +23,7 @@ import java.util.Locale
 class SelectBirthdayDialog {
     class Builder(activity: FragmentActivity) : BaseDialogFragment.Builder<Builder>(activity) {
 
-        private val mCurrentData = Calendar.getInstance()
+        private val mCurrentData = Calendar.getInstance() //用于存储用户选择的日期，不理解Calendar.getInstance()
 
         private var mOnDateCall: ((String?) -> Unit)? = null
 
@@ -41,6 +41,7 @@ class SelectBirthdayDialog {
             setAnimStyle(BaseDialog.AnimStyle.BOTTOM)
             gravity = Gravity.BOTTOM
 
+            //监听用户的点击
             ViewUtils.setClipViewCornerTopRadius(mBinding.clRoot, dpToPx(12))
             mBinding.calendarView.setOnDateChangeListener { view, year, month, dayOfMonth ->
                 LogUtil.i("日期选择回调：$year-$month-$dayOfMonth")
@@ -50,6 +51,7 @@ class SelectBirthdayDialog {
             mBinding.tvComplete.onClick {
                 val timeStamp = SimpleDateFormat("yyyy-MM-dd", Locale.CHINA).format(mCurrentData.time)
                 LogUtil.i("当前选择时间：${timeStamp}")
+                //用户点击保存后，把日期传给回调函数
                 mOnDateCall?.invoke(timeStamp)
                 dismiss()
             }
@@ -57,7 +59,7 @@ class SelectBirthdayDialog {
                 dismiss()
             }
         }
-
+//写法不是很理解(onDateCall: ((String?) -> Unit)): Builder
         fun setBirthDayDateCall(onDateCall: ((String?) -> Unit)): Builder {
             mOnDateCall = onDateCall
             return this

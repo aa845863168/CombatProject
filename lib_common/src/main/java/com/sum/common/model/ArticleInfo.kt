@@ -5,6 +5,7 @@ package com.sum.common.model
  * @date   2023/3/21 23:16
  * @desc   文章info
  */
+//文章列表
 data class ArticleList(
     val curPage: Int? = 0,
     val offset: Int? = 0,
@@ -14,12 +15,13 @@ data class ArticleList(
     val datas: MutableList<ArticleInfo>? = mutableListOf()
 )
 
+//搜索到的文章列表的item
 data class ArticleInfo(
     val id: Int,
     val userId: Int,
     val courseId: Int?,
     val originId: Int?,
-    var collect: Boolean? = false,
+    var collect: Boolean? = false, //被收藏后collect被选中，标记为ture
     val title: String?,
     val desc: String?,
     val link: String?,

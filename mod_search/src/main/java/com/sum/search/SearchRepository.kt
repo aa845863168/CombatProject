@@ -33,7 +33,7 @@ class SearchRepository : BaseRepository() {
      */
     suspend fun searchResult(page: Int, keyWord: String): ArticleList? {
         return requestResponse {
-            ApiManager.api.searchResult(page, keyWord)
+            ApiManager.api.searchResult(page, keyWord) //通过keyWord，调用API发送post请求，服务器返回含有keyWord关键词的文章
         }
     }
 

@@ -87,6 +87,7 @@ class SettingActivity : BaseDataBindActivity<ActivitySettingBinding>() {
             AboutUsActivity.start(this)
         }
         mBinding.tvLogout.onClick {
+            //建造者模式。提供登出功能进行前的归零信息操作
             LogoutTipsDialog.Builder(this, mButtonClickListener = {
                 showLoading()
                 LoginServiceProvider.logout(context = this, lifecycleOwner = this) {

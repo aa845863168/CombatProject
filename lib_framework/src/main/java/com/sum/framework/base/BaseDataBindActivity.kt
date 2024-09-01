@@ -12,13 +12,12 @@ import java.lang.reflect.ParameterizedType
  * @date   2023/2/26 11:48
  * @desc   dataBinding Activity基类
  */
-abstract class BaseDataBindActivity<DB : ViewBinding> : BaseActivity() {
+abstract class  BaseDataBindActivity<DB : ViewBinding> : BaseActivity() {//DB是一个泛型参数，为了约束和让系统自动判断参数类型
     lateinit var mBinding: DB
-
     override fun setContentLayout() {
 //      mBinding = DataBindingUtil.setContentView(this, getLayoutResId())
         val type = javaClass.genericSuperclass
-        val vbClass: Class<DB> = type!!.saveAs<ParameterizedType>().actualTypeArguments[0].saveAs()
+        val vbClass: Class<DB> = type!!.saveAs<ParameterizedType>().actualTypeArguments[0].saveAs() //不懂
         val method = vbClass.getDeclaredMethod("inflate", LayoutInflater::class.java)
         mBinding = method.invoke(this, layoutInflater)!!.saveAsUnChecked()
         setContentView(mBinding.root)

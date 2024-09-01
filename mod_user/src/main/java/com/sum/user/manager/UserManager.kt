@@ -1,5 +1,6 @@
 package com.sum.user.manager
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sum.common.constant.USER_INFO_DATA
@@ -42,6 +43,9 @@ object UserManager {
      */
     fun saveUserPhone(phone: String?) {
         mmkv.encode(USER_PHONE_NUMBER, phone)
+        Log.d("UserPhone", "USER_PHONE: $phone")
+        val userPhoneNumber = mmkv.decodeString(USER_PHONE_NUMBER, "")
+        Log.d("UserPhone", "USER_PHONE_NUMBER: $userPhoneNumber")
     }
 
     /**
@@ -68,7 +72,9 @@ object UserManager {
      * @return phone
      */
     fun getUserPhone(): String? {
-        return mmkv.decodeString(USER_PHONE_NUMBER, "")
+        val userPhoneNumber = mmkv.decodeString(USER_PHONE_NUMBER, "")
+        Log.d("UserPhone", "USER_PHONE_NUMBER: $userPhoneNumber")
+        return userPhoneNumber
     }
 
     /**

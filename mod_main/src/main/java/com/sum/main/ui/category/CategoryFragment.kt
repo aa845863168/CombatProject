@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.util.SparseArray
 import android.view.View
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.sum.framework.adapter.ViewPage2FragmentAdapter
@@ -12,7 +11,6 @@ import com.sum.framework.base.BaseMvvmFragment
 import com.sum.framework.ext.gone
 import com.sum.framework.ext.toJson
 import com.sum.framework.ext.visible
-import com.sum.main.R
 import com.sum.main.databinding.FragmentCategoryBinding
 import com.sum.main.ui.category.adapter.CategoryTabAdapter
 import com.sum.main.ui.category.viewmodel.CategoryViewModel

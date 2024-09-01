@@ -43,7 +43,8 @@ class HomeViewModel : BaseViewModel() {
 //            bannersLiveData.value = data
 //        }
 //        return bannersLiveData
-        //通过flow来请求
+
+        //通过flow来请求,获取banner需要的图片
         viewModelScope.launch {
             val data = requestFlow(requestCall = {
                 ApiManager.api.getHomeBanner()

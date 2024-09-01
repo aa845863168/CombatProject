@@ -60,7 +60,7 @@ class RegisterActivity : BaseMvvmActivity<ActivityRegisterBinding, LoginViewMode
         mBinding.tvRegister.onClick {
             toRegister()
         }
-
+        //监听输入框，随时改变注册按钮的选中状态
         setEditTextChange(mBinding.etPhone)
         setEditTextChange(mBinding.etPassword)
         setEditTextChange(mBinding.etRepassword)

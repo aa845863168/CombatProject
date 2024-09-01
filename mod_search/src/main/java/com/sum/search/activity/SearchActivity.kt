@@ -40,13 +40,14 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
      * 搜索历史item点击
      */
     private val clickCallBack = { keyWord: String ->
-        mBinding.etSearch.setText(keyWord)
-        getSearchResult()
+        mBinding.etSearch.setText(keyWord) //搜索框加载文字
+        getSearchResult() //加载搜索结果的列表
     }
 
     override fun initView(savedInstanceState: Bundle?) {
-        initRecyclerView()
-        initListener()
+        initRecyclerView()//初始化 RecyclerView
+        initListener()//初始化各种监听器
+        //设置了一些 UI 元素的圆角
         window.statusBarColor = getColorFromResource(com.sum.common.R.color.color_f0f2f4)
         ViewUtils.setClipViewCornerRadius(mBinding.etSearch, dpToPx(6))
         ViewUtils.setClipViewCornerRadius(mBinding.tvSearch, dpToPx(4))
@@ -58,6 +59,7 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
         mBinding.searchBack.onClick {
             finish()
         }
+        //理搜索按钮的点击事件
         mBinding.tvSearch.onClick {
             page = 0
             getSearchResult()
@@ -71,18 +73,22 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
 //                    LogUtil.e("结果：$it")
 //                }
 //                .launchIn(lifecycleScope)
+
+        //监听搜索框文本变化，如果内容为空，隐藏搜索结果视图
         mBinding.etSearch.addTextChangedListener {
             val content = it.toString()
             if (content.isEmpty()) {
                 mBinding.clSearchResult.gone()
             }
         }
+        //监听搜索框的软键盘搜索按钮，调用 getSearchResult()
         mBinding.etSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == (EditorInfo.IME_ACTION_SEARCH)) {
                 getSearchResult()
             }
             return@setOnEditorActionListener false
         }
+        //设置搜索历史视图的清除监听器
         mBinding.viewSearchHistory.setOnHistoryClearListener {
             clearHistoryCache(it)
         }
@@ -104,23 +110,27 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
                 }
                 .setonConfirmListener {
                     clearSuccess.invoke()
-                    SearchManager.clearSearchHistory()
+                    SearchManager.clearSearchHistory() //清除SEARCH_HISTORY_INFO的数据
                     it?.dismiss()
                 }.create().show()
     }
-
+    /**
+     * 设置搜索结果列表的适配器
+     */
     private fun initRecyclerView() {
         mBinding.refreshLayout.apply {
-            setEnableRefresh(false)
-            setEnableLoadMore(true)
-            setOnLoadMoreListener(this@SearchActivity)
+            setEnableRefresh(false)//禁用了下拉刷新
+            setEnableLoadMore(true)// 启用了上拉加载更多
+            setOnLoadMoreListener(this@SearchActivity)//设置了加载更多的监听器
             autoRefresh()
         }
+        //绑定recyclerView根视图
         mAdapter = SearchResultAdapter()
         mBinding.recyclerView.apply {
             layoutManager = LinearLayoutManager(this@SearchActivity)
             adapter = mAdapter
         }
+        //当用户点击列表项时，会获取该项的数据，并根据链接（item.link）打开文章详情页面。
         mAdapter.onItemClickListener = { view: View, position: Int ->
             val item = mAdapter.getItem(position)
             if (item != null && !item.link.isNullOrEmpty()) {
@@ -131,6 +141,8 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
                 )
             }
         }
+        //如果用户已登录，还会处理收藏操作
+        //接收adpart的item的id,然后判断是否登录，已登录才携带id跳转进collectArticle，进行收藏操作
         mAdapter.onItemCollectListener = { _: View, position: Int ->
             if (LoginServiceProvider.isLogin()) {
                 collectArticle(position)
@@ -139,26 +151,33 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
             }
         }
     }
-
+    /*
+    * 初始化搜索界面的视图,分为搜索前和搜索后
+    * */
     override fun initData() {
+
         mViewModel.getHotSearchData().observe(this) { hotList ->
-            val list = hotList?.map { it.name ?: "" }?.toMutableList()
-            mBinding.viewSearchRecommend.setHistoryData(list)
+            val list = hotList?.map { it.name ?: "" }?.toMutableList() //仓库层api返回的热词数据更新了，触发hotSearchLiveData的观察者，
+            mBinding.viewSearchRecommend.setHistoryData(list) //重新设置热词数据
         }
         mBinding.viewSearchRecommend.getDeleteImageView().gone()
 
-        setSearchHistory()
+        setSearchHistory() //为什么热词更新了，要重新设置搜索历史
+        //确保搜索历史与最新的热词数据保持一致。这样，用户在搜索时可以看到最新的热门搜索项和之前的历史记录。
+
 
         mViewModel.searchResultLiveData.observe(this) {
             if (page == 0) {
-                mAdapter.setData(it)
+                //！！！把searchResultLiveData的文章列表数据传给适配器
+                mAdapter.setData(it) //适配器会根据List的大小自动创建相应数量的item
+                //如果搜索结果为空，显示空视图；否则隐藏空视图。
                 if (it.isNullOrEmpty()) {
                     //空视图
                     mBinding.viewEmptyData.visible()
                 } else {
                     mBinding.viewEmptyData.gone()
                 }
-            } else {
+            } else {//如果 page 不为 0，表示已经加载了一页或更多数据，添加新的item。
                 mAdapter.addAll(it)
                 mBinding.refreshLayout.finishLoadMore()
             }
@@ -178,15 +197,18 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
      */
     private fun getSearchResult() {
         val keyWord = mBinding.etSearch.text.toString()
-        mViewModel.searchResult(page, keyWord)
+        mViewModel.searchResult(page, keyWord) //searchResult返回到文章列表的liveDate
         if (page == 0 && keyWord.isNotEmpty()) {
+            //获取搜索结果后，更新搜索历史
             SearchManager.addSearchHistory(keyWord)
             setSearchHistory()
             mBinding.clSearchResult.visible()
             mBinding.viewEmptyData.visible()
         }
     }
-
+    /**
+     * 搜索结果列表超过一页时调用
+     */
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         page++
         getSearchResult()
@@ -200,13 +222,15 @@ class SearchActivity : BaseMvvmActivity<ActivitySearchBinding, SearchViewModel>(
 
         if (item != null) {
             showLoading()
+            //通过改变ArticleInfo的collect值，达成是否收藏
             val collect = item.collect ?: false
+            //当用户点击星星，就触发观察者，adpart->item-> collectArticle
             mViewModel.collectArticle(item.id, collect).observe(this) {
                 dismissLoading()
                 it?.let {
                     val tipsRes = if (collect) com.sum.common.R.string.collect_cancel else com.sum.common.R.string.collect_success
                     TipsToast.showSuccessTips(tipsRes)
-                    item.collect = !collect
+                    item.collect = !collect //赋一个相反的值
                     mAdapter.updateItem(position, item)
                 }
             }

@@ -8,7 +8,6 @@ import com.sum.framework.decoration.NormalItemDecoration
 import com.sum.framework.ext.toJson
 import com.sum.framework.ext.visible
 import com.sum.framework.utils.dpToPx
-import com.sum.main.R
 import com.sum.main.databinding.FragmentSystemBinding
 import com.sum.main.ui.system.adapter.SystemAdapter
 import com.sum.main.ui.system.viewmodel.SystemViewModel
