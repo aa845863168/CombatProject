@@ -11,6 +11,10 @@ package com.sum.network.constant
  */
 const val BASE_URL = "https://www.wanandroid.com"
 
+const val BASE_WEATHER_URL = "https://api.caiyunapp.com/"
+
+const val WEATHER_TOKEN = "hqyuAdsXaeX5JKzI"
+
 const val KEY_TOKEN = "token"
 const val KEY_COOKIE = "Cookie"
 const val KEY_SET_COOKIE = "set-cookie"

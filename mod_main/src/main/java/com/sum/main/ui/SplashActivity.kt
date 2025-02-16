@@ -1,6 +1,9 @@
 package com.sum.main.ui
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.lifecycleScope
 import com.sum.common.provider.MainServiceProvider
 import com.sum.framework.base.BaseDataBindActivity
@@ -17,6 +20,7 @@ import com.sum.main.databinding.ActivitySplashBinding
  */
 class SplashActivity : BaseDataBindActivity<ActivitySplashBinding>() {
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun initView(savedInstanceState: Bundle?) {
         StatusBarSettingHelper.setStatusBarTranslucent(this)
         mBinding.tvSkip.onClick {

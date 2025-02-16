@@ -1,13 +1,25 @@
 package com.sum.main.ui.mine
 
+import android.annotation.SuppressLint
+import android.content.Context
+import android.Manifest
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.alibaba.android.arouter.launcher.ARouter
 import com.scwang.smart.refresh.layout.api.RefreshLayout
 import com.scwang.smart.refresh.layout.listener.OnLoadMoreListener
 import com.scwang.smart.refresh.layout.listener.OnRefreshListener
+import com.sum.common.Sky
 import com.sum.common.constant.DEMO_ACTIVITY_DATABINDING
 import com.sum.common.constant.DEMO_ACTIVITY_LIFECYCLE
 import com.sum.common.constant.DEMO_ACTIVITY_LIVEDATA
@@ -16,6 +28,7 @@ import com.sum.common.constant.DEMO_ACTIVITY_VIEWMODEL
 import com.sum.common.constant.USER_ACTIVITY_COLLECTION
 import com.sum.common.constant.USER_ACTIVITY_INFO
 import com.sum.common.constant.USER_ACTIVITY_SETTING
+import com.sum.common.getSky
 import com.sum.common.model.User
 import com.sum.common.provider.LoginServiceProvider
 import com.sum.common.provider.MainServiceProvider
@@ -24,6 +37,7 @@ import com.sum.framework.base.BaseMvvmFragment
 import com.sum.framework.decoration.NormalItemDecoration
 import com.sum.framework.ext.gone
 import com.sum.framework.ext.onClick
+import com.sum.framework.ext.string
 import com.sum.framework.ext.visible
 import com.sum.framework.log.LogUtil
 import com.sum.framework.toast.TipsToast
@@ -33,9 +47,13 @@ import com.sum.glide.loadFile
 import com.sum.main.R
 import com.sum.main.databinding.FragmentMineBinding
 import com.sum.main.databinding.FragmentMineHeadBinding
+import com.sum.main.repository.HomeRepository
 import com.sum.main.ui.mine.viewmodel.MineViewModel
 import com.sum.main.ui.system.adapter.ArticleAdapter
 import com.sum.network.error.ERROR
+import com.sum.network.manager.ApiManager
+import com.sum.network.repository.BaseRepository
+import kotlinx.coroutines.launch
 import java.io.File
 
 /**
@@ -52,6 +70,12 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
     // 文章列表Adapter
     private lateinit var mAdapter: ArticleAdapter
 
+    val homeRepository by lazy { HomeRepository() }
+
+    private var lon: String = ""
+
+    private var lat: String = ""
+
     override fun initView(view: View, savedInstanceState: Bundle?) {
         initRecyclerView()
         initHeadView()
@@ -64,10 +88,102 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
         UserServiceProvider.getUserLiveData().observe(this) {
             setUserInfo(it)
         }
+        getLocationInfo()
     }
 
     override fun onFragmentVisible(isVisibleToUser: Boolean) {
         LogUtil.e("isVisibleToUser:$isVisibleToUser")
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    @SuppressLint("MissingPermission")
+    fun getLocationInfo() {
+        val locationManager = activity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        //判断是否开启位置服务，没有则跳转至设置来开启
+        if (isLocationServiceOpen(locationManager)) {
+            //获取所有支持的provider
+            val providers = locationManager.getProviders(true)
+            //用来存储最优的结果
+            var betterLocation: Location? = null
+            for (provider in providers) {
+                val location = locationManager.getLastKnownLocation(provider)
+                location?.let {
+                    Log.i(TAG, "$provider 精度为：${it.accuracy}")
+                    if (betterLocation == null) {
+                        betterLocation = it
+                    } else {
+                        //因为半径等于精度，所以精度越低代表越准确
+                        if (it.accuracy < betterLocation!!.accuracy)
+                            betterLocation = it
+                    }
+                }
+                if (location == null) {
+                    Log.i(TAG, "$provider 获取到的位置为null")
+                }
+            }
+            betterLocation?.let {
+                Log.i(TAG, "精度最高的获取方式：${it.provider} 经度：${it.longitude}  纬度：${it.latitude}")
+                lon = it.longitude.toString()
+                lat = it.latitude.toString()
+                refreshWeather(it.longitude.toString(), it.latitude.toString(), "")
+            }
+            //（四）若所支持的provider获取到的位置均为空，则开启连续定位服务
+            if (betterLocation == null) {
+                for (provider in locationManager.getProviders(true)) {
+                    locationMonitor(provider, locationManager)
+                }
+                Log.i(TAG, "getLocationInfo: 获取到的经纬度均为空，已开启连续定位监听")
+            }
+        } else {
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun refreshWeather(lng: String, lat: String, placeName: String) {
+        lifecycleScope.launch {
+            val realtimeResponse = ApiManager.getRealtimeWeather(lon, lat)
+            if (realtimeResponse.status == "ok") {
+                mHeadBinding.weatcherIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), getSky(realtimeResponse.result.realtime.skycon).icon))
+                mHeadBinding.weatcherTempeatureSky.text = "${realtimeResponse.result.realtime.temperature.toInt()}℃  ${getSky(realtimeResponse.result.realtime.skycon).info}"
+            } else {
+
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    fun locationMonitor(provider: String, locationManager: LocationManager) {
+        locationManager.requestLocationUpdates(
+            provider,
+            60000.toLong(),        //超过1分钟则更新位置信息
+            8.toFloat(),        //位置超过8米则更新位置信息
+            locationListener
+        )
+    }
+
+    private var locationListener: LocationListener = object : LocationListener {
+        override fun onLocationChanged(location: Location) {
+            Log.i(TAG, "onLocationChanged: 经纬度发生变化")
+        }
+
+        override fun onProviderDisabled(provider: String) {
+            Log.i(TAG, "onProviderDisabled: ")
+        }
+
+        override fun onProviderEnabled(provider: String) {
+            Log.i(TAG, "onProviderEnabled: ")
+        }
+    }
+
+
+    /**
+     * 判断定位服务是否开启
+     */
+    private fun isLocationServiceOpen(locationManager: LocationManager): Boolean {
+        var gps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+        var network = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+        //有一个开启就可
+        return gps || network
     }
 
     /**
@@ -215,6 +331,8 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
     override fun onRefresh(refreshLayout: RefreshLayout) {
         mPage = 0
         getRecommendList()
+        refreshWeather(lon, lat, "")
+
     }
 
     /**
@@ -240,6 +358,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
     override fun onLoadMore(refreshLayout: RefreshLayout) {
         mPage++
         getRecommendList()
+
     }
 
     /**

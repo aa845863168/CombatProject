@@ -1,5 +1,6 @@
 package com.sum.main.repository
 
+import RealtimeResponse
 import com.sum.common.model.ArticleList
 import com.sum.common.model.Banner
 import com.sum.common.model.ProjectSubList
@@ -61,4 +62,6 @@ class HomeRepository : BaseRepository() {
     suspend fun getVideoListCache(): MutableList<VideoInfo>? {
         return VideoCacheManager.getVideoList()
     }
+
+
 }

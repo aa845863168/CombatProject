@@ -1,5 +1,6 @@
 package com.sum.network.api
 
+import RealtimeResponse
 import com.sum.common.model.ArticleList
 import com.sum.common.model.Banner
 import com.sum.common.model.CategoryItem
@@ -9,6 +10,8 @@ import com.sum.network.response.BaseResponse
 import com.sum.common.model.ProjectTabItem
 import com.sum.common.model.SystemList
 import com.sum.common.model.User
+import com.sum.network.constant.WEATHER_TOKEN
+import retrofit2.Call
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -184,4 +187,7 @@ interface ApiInterface {
      */
     @GET("hotkey/json")
     suspend fun getHotSearchData(): BaseResponse<MutableList<HotSearch>>
+
+    @GET("v2.6/${WEATHER_TOKEN}/{lng},{lat}/realtime")
+    suspend fun getRealtimeWeather(@Path("lng") lng: String, @Path("lat") lat: String): RealtimeResponse
 }

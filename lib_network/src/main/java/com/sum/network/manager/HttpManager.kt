@@ -4,6 +4,8 @@ import android.util.Log
 import com.sum.framework.helper.SumAppHelper
 import com.sum.framework.utils.NetworkUtil
 import com.sum.network.constant.BASE_URL
+import com.sum.network.constant.BASE_WEATHER_URL
+import com.sum.network.constant.WEATHER_TOKEN
 import com.sum.network.error.NoNetWorkException
 import com.sum.network.error.ERROR
 import com.sum.network.interceptor.CookiesInterceptor
@@ -24,12 +26,21 @@ import java.util.concurrent.TimeUnit
 object HttpManager {
     private val mRetrofit: Retrofit
 
+    private val weatherRetrofit: Retrofit
+
     init {
         mRetrofit = Retrofit.Builder()
                 .client(initOkHttpClient())
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
+
+        weatherRetrofit = Retrofit.Builder()
+            .client(initOkHttpClient())
+            .baseUrl(BASE_WEATHER_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
     }
 
     /**
@@ -38,6 +49,8 @@ object HttpManager {
     fun <T> create(apiService: Class<T>): T {
         return mRetrofit.create(apiService)
     }
+
+    fun <T> weatherCreate(serviceClass: Class<T>): T = weatherRetrofit.create(serviceClass)
 
     /**
      * 初始化OkHttp

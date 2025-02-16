@@ -55,6 +55,7 @@ dependencies {
 
     compileOnly rootProject.depsLibs.aroutreApi
     kapt rootProject.depsLibs.arouterCompiler
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
 
     compileOnly project(path: ':lib_framework')
     compileOnly project(path: ':lib_banner')
