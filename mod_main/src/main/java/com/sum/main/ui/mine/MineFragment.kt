@@ -145,6 +145,13 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             if (realtimeResponse.status == "ok") {
                 mHeadBinding.weatcherIcon.setImageDrawable(ContextCompat.getDrawable(requireContext(), getSky(realtimeResponse.result.realtime.skycon).icon))
                 mHeadBinding.weatcherTempeatureSky.text = "${realtimeResponse.result.realtime.temperature.toInt()}℃  ${getSky(realtimeResponse.result.realtime.skycon).info}"
+                if (realtimeResponse.result.realtime.temperature.toInt() <= 20) {
+                    mHeadBinding.desc1.text = "天气寒凉"
+                    mHeadBinding.desc2.text = "多穿衣服"
+                } else {
+                    mHeadBinding.desc1.text = "天气暖和"
+                    mHeadBinding.desc2.text = "适合出门"
+                }
             } else {
 
             }
