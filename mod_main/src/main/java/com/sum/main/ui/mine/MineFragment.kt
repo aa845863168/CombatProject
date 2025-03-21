@@ -1,6 +1,7 @@
 package com.sum.main.ui.mine
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,12 +53,12 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
     // 文章列表Adapter
     private lateinit var mAdapter: ArticleAdapter
 
+    //实现抽象Fragment基类的抽象方法//initData() 方法是在 initView() 方法之后被调用的，所以setUserInfo()的tvName.text覆盖 initHeadView()的原始值
     override fun initView(view: View, savedInstanceState: Bundle?) {
         initRecyclerView()
         initHeadView()
         initListener()
     }
-
     override fun initData() {
         val user = UserServiceProvider.getUserInfo()
         setUserInfo(user)
@@ -208,6 +209,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
 
     private fun initHeadView() {
         mHeadBinding = FragmentMineHeadBinding.inflate(LayoutInflater.from(requireContext()))
+        //默认是未登录的，
         mHeadBinding.tvName.text = getStringFromResource(R.string.mine_not_login)
         mAdapter.addHeadView(mHeadBinding.root)
     }
@@ -225,9 +227,12 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             if (mPage == 0) {
                 mAdapter.setData(it)
                 if (it.isNullOrEmpty()) {
-                    mHeadBinding.tvRecommendTitle.gone()
+//                    mHeadBinding.tvRecommendTitle.gone()
+//                    Log.d("RecommendList", "The recommended list is null or empty.${it}")
                 } else {
                     mHeadBinding.tvRecommendTitle.visible()
+                    Log.d("RecommendList", "The recommended list is not  empty.${it}")
+
                 }
                 mBinding?.refreshLayout?.finishRefresh()
             } else {
@@ -245,6 +250,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
     /**
      * 收藏和取消收藏
      * @param position
+     * 为你推荐的收藏点击
      */
     private fun setCollectView(position: Int) {
         val data = mAdapter.getItem(position)
@@ -253,6 +259,7 @@ class MineFragment : BaseMvvmFragment<FragmentMineBinding, MineViewModel>(), OnR
             val collect = item.collect ?: false
             mViewModel.collectArticle(item.id, collect).observe(this) {
                 dismissLoading()
+                Log.d("collectArticle","收藏")
                 it?.let {
                     val tipsRes =
                         if (collect) com.sum.common.R.string.collect_cancel else com.sum.common.R.string.collect_success

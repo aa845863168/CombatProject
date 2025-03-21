@@ -39,13 +39,7 @@ class VideoAdapter(
             holder.binding.tvAuthor.text = "@${selectedItem?.authorName}"
             holder.binding.tvTitle.text = selectedItem?.title + selectedItem?.desc
             flag = 1 // 一次替换后标记为 1，防止重复操作
-        } else if (flag == -1 && position == selectedVideoId) {
-            // 获取原来0位置的数据项
-            val firstItem = getItem(0)
-            // 设置 selectedVideoId 对应位置的数据为原来0位置的数据
-            holder.binding.tvAuthor.text = "@${firstItem?.authorName}"
-            holder.binding.tvTitle.text = firstItem?.title + firstItem?.desc
-        } else {
+        }  else {
             // 正常情况下根据位置绑定数据
             val currentItem = getItem(position)
             holder.binding.tvAuthor.text = "@${currentItem?.authorName}"

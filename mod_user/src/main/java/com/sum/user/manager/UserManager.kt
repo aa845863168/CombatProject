@@ -42,9 +42,9 @@ object UserManager {
      * @param phone
      */
     fun saveUserPhone(phone: String?) {
-        mmkv.encode(USER_PHONE_NUMBER, phone)
+        mmkv.encode(USER_PHONE_NUMBER, phone) //加密
         Log.d("UserPhone", "USER_PHONE: $phone")
-        val userPhoneNumber = mmkv.decodeString(USER_PHONE_NUMBER, "")
+        val userPhoneNumber = mmkv.decodeString(USER_PHONE_NUMBER, "") //解密
         Log.d("UserPhone", "USER_PHONE_NUMBER: $userPhoneNumber")
     }
 

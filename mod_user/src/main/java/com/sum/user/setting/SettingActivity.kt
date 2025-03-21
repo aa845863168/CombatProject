@@ -78,13 +78,13 @@ class SettingActivity : BaseDataBindActivity<ActivitySettingBinding>() {
             TipsToast.showWarningTips(R.string.setting_newest_version)
         }
         mBinding.clPrivacyPolicy.onClick {
-            LoginServiceProvider.readPolicy(this)
+//            LoginServiceProvider.readPolicy(this)
         }
         mBinding.clClearCache.onClick {
             showClearCacheDialog()
         }
         mBinding.clAboutUs.onClick {
-            AboutUsActivity.start(this)
+//            AboutUsActivity.start(this)
         }
         mBinding.tvLogout.onClick {
             //建造者模式。提供登出功能进行前的归零信息操作

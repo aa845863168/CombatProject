@@ -14,8 +14,8 @@
 
     <string name="mine_about">关于我们</string>
     <string name="mine_not_login">未登录</string>
-    <string name="mine_short_video">短视频</string>
-    <string name="mine_my_works">我的作品</string>
+    <string name="mine_short_video">文章</string>
+    <string name="mine_my_works">  </string>
     <string name="mine_my_store">我的店铺</string>
     <string name="mine_my_like">我喜欢的</string>
 

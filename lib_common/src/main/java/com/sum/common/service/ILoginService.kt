@@ -8,7 +8,6 @@ import com.sum.common.model.User
 
 /**
  * @author mingyan.su
- * @date   2023/3/25 11:29
  * @desc   登录服务相关接口
  * 只是定义了一个接口，提供了对外相关能力，其他模块只需要按需添加，需要在login模块实现
  */

@@ -21,7 +21,11 @@ abstract class BaseMvvmFragment<DB : ViewDataBinding, VM : ViewModel> : BaseData
     }
 
     open fun initViewModel() {
+
         val argument = (this.javaClass.genericSuperclass as ParameterizedType).actualTypeArguments
+        //genericSuperclass 返回当前类的直接超类的类型，包括泛型信息，如BaseDataBindFragment<MyViewBinding>
+        //actualTypeArguments 返回当前类的实际的泛型参数类型
         mViewModel = ViewModelProvider(this).get(argument[1] as Class<VM>)
     }
-}
+
+    }

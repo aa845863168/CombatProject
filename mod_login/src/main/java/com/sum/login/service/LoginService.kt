@@ -20,7 +20,6 @@ import kotlinx.coroutines.launch
 
 /**
  * @author mingyan.su
- * @date   2023/3/25 13:41
  * @desc   提供对ILoginService接口的具体实现
  */
 @Route(path = LOGIN_SERVICE_LOGIN)

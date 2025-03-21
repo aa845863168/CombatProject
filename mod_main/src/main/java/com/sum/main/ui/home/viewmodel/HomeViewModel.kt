@@ -63,6 +63,7 @@ class HomeViewModel : BaseViewModel() {
      */
     fun getHomeInfoList(page: Int): LiveData<ArticleList> {
         return liveData {
+            //liveData构建器自动启动一个协程，开始耗时的网络请求操作
             val response = safeApiCall(errorBlock = { code, errorMsg ->
                 TipsToast.showTips(errorMsg)
             }) {

@@ -1,5 +1,6 @@
 package com.sum.main.ui.mine.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sum.common.model.ArticleInfo
@@ -45,14 +46,17 @@ class MineViewModel : BaseViewModel() {
      * 收藏 or 取消收藏站内文章
      * @param id  文章id
      * @param isCollect 是否收藏
+     * ”为你推荐“
      */
     fun collectArticle(id: Int, isCollect: Boolean): LiveData<Int?> {
         launchUIWithResult(responseBlock = {
             if (!isCollect) {
                 //收藏站内文章
+                Log.d("collectArticle","收藏")
                 ApiManager.api.collectArticle(id)
             } else {
                 //取消收藏站内文章
+                Log.d("collectArticle","取消收藏")
                 ApiManager.api.cancelCollectArticle(id)
             }
         }, errorCall = object : IApiErrorCallback {
